@@ -101,9 +101,9 @@ class MoreInfoViewController: UIViewController {
             view_moreInfo.isHidden=true
         }//end of else if
         
-        print(" ")
-        print("Find frames that do not apply......")
-        getFrameSize()
+//        print(" ")
+//        print("Find frames that do not apply......")
+//        getFrameSize()
         
     }//end of viewDidLoad
 
@@ -120,8 +120,8 @@ class MoreInfoViewController: UIViewController {
         ]//end of labels
         
         
-        print("")
-        print("get CGSize label size & real size ----------------------")
+//        print("")
+//        print("get CGSize label size & real size ----------------------")
         labels.forEach { label in
             setContent(label: label!)
             
@@ -134,7 +134,7 @@ class MoreInfoViewController: UIViewController {
             label!.numberOfLines = 0
             
             label!.sizeToFit()
-            getLabelSize(label: label!)
+//            getLabelSize(label: label!)
             print("")
         }//end of forEach
 
@@ -150,8 +150,8 @@ class MoreInfoViewController: UIViewController {
             view_moreInfo_horizontal_deposit_method_qesitm
         ]//end of horizontalViews
         
-        print(" ")
-        print("Horizontal stack view = Label Size ----------------------")
+//        print(" ")
+//        print("Horizontal stack view = Label Size ----------------------")
         
         for (index, view) in horizontalViews.enumerated() {
             setHorizontalFrame(view: view!, label: labels[index]!)
@@ -164,10 +164,10 @@ class MoreInfoViewController: UIViewController {
         
         setVerticalFrame()
         
-        getFrameSize()
+//        getFrameSize()
 
-        print(" ")
-        print("vertical stack view real size: ", view_moreInfo_vertical.frame.height)
+//        print(" ")
+//        print("vertical stack view real size: ", view_moreInfo_vertical.frame.height)
         
         view_moreInfo.layoutIfNeeded()
         view.layoutIfNeeded()
@@ -180,7 +180,7 @@ class MoreInfoViewController: UIViewController {
 
     func setLabelHeightSize(label:UILabel) -> CGSize{
         let newSize = label.sizeThatFits(CGSize(width: label.frame.size.width, height: CGFloat.greatestFiniteMagnitude))
-        print("set CGSize : ",newSize)
+//        print("set CGSize : ",newSize)
         return newSize
     }//end of setLabelHeightSize
     
@@ -227,7 +227,7 @@ class MoreInfoViewController: UIViewController {
     
     func setHorizontalFrame(view: UIStackView, label: UILabel) {
         view.frame.size.height = label.frame.size.height
-        print("Horizontal stack view = Label Size : ", view.frame.size.height)
+//        print("Horizontal stack view = Label Size : ", view.frame.size.height)
     }//end of setHorizontalFrame
 
     func getSegueData() {

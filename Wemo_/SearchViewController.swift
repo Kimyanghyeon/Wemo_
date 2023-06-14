@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SearchViewController: UIViewController,UITextFieldDelegate {
+class SearchViewController: UIViewController,UITextFieldDelegate,UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     //select name
     
@@ -122,6 +122,11 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
     
     @IBOutlet var btn_input_enptName: UIButton!
     
+    // OCR
+    @IBOutlet var btn_select_cameraOrGallery: UIButton!
+    
+    let imagePickerController = UIImagePickerController()
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -129,16 +134,22 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
         tf_select_name.delegate=self
         tf_select_print.delegate=self
         tf_select_enptName.delegate=self
-
+        
+        imagePickerController.sourceType = .camera
+        
         selectImg()
         setBtnTitle()
+        setPullDownBtn()
         
     }//end of viewDidLoad
     
+    
+    
     func setBtnTitle(){
-//        btn_select_shape.setTitleColor(UIColor.black, for: .normal)
-//        btn_select_shape.titleLabel?.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
-//        btn_select_shape.titleLabel?.font=UIFont.init(name: "Pretendard-SemiBold", size: 10)
+        
+        tf_select_enptName.addTarget(self, action: #selector(textFieldDidChanacgeEnptName(_:)), for: .editingDidEnd)
+        tf_select_print.addTarget(self, action: #selector(textFieldDidChanacgePrint(_:)), for: .editingDidEnd)
+        
         btn_select_shape.layer.borderWidth=0.5
         btn_select_shape.layer.cornerRadius=10
         
@@ -281,17 +292,67 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
         img_dividingLine_etc.addGestureRecognizer(eventEtc_dl)
     }//end of selectImg
     
+    //SearchView
+    func resetSelect(){
+        btn_select_shape.setTitle("모양", for: .normal)
+        btn_select_color.setTitle("색상", for: .normal)
+        btn_select_formulation.setTitle("제형", for: .normal)
+        btn_select_dividingLine.setTitle("분할선", for: .normal)
+        btn_select_print.setTitle("마크", for: .normal)
+        btn_select_enptName.setTitle("업체", for: .normal)
+        btn_select_etcOtcName.setTitle("구분", for: .normal)
+        tf_select_name.text=""
+        tf_select_print.text=""
+        tf_select_enptName.text=""
+    }//end of resetSelect
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+         self.view.endEditing(true)
+   }//end of touchesBegan
     
     //return keyboard
     func textFieldShouldReturn(_ textField: UITextField) -> (Bool) {
+        
         tf_select_name.endEditing(true)
         tf_select_print.endEditing(true)
         tf_select_enptName.endEditing(true)
+        
+        tf_select_name.clearsOnBeginEditing = true
+        tf_select_print.clearsOnBeginEditing = true
+        tf_select_enptName.clearsOnBeginEditing = true
+        
+        btn_select_print.setTitle(tf_select_print.text, for: .normal)
+        btn_select_enptName.setTitle(tf_select_enptName.text, for: .normal)
+        
         print(tf_select_name.text!)
         print(tf_select_print.text!)
         print(tf_select_enptName.text!)
+        
         return true
     }//end of textFieldShouldReturn
+    
+    func setPullDownBtn(){
+        
+        let camera = UIAction(title: "카메라로 촬영하기", image: UIImage(systemName: "camera.fill")) { _ in
+            self.selectFromCamera()
+        }//end of camera
+        
+        let gallery = UIAction(title: "갤러리에서 선택하기", image: UIImage(systemName: "photo.fill.on.rectangle.fill")) { _ in
+            self.selectFromGallery()
+        }//end of gallery
+        
+        self.btn_select_cameraOrGallery.menu = UIMenu(title: "사진 선택",
+                                     identifier: nil,
+                                     options: .displayInline,
+                                     children: [camera, gallery])
+        
+        self.btn_select_cameraOrGallery.showsMenuAsPrimaryAction = true
+        
+//        자식 메뉴 선택시 자식 메뉴의 타이틀로 부모 버튼 타이틀 변경
+//        self.btn_select_cameraOrGallery.changesSelectionAsPrimaryAction = true
+        
+
+    }//end of setPullDownBtn
 
     
     //------------------------------------------------------------------------------------------------------
@@ -325,7 +386,7 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
     }//end of shapeRhombus
     
     @objc func shapeSquare()->(){
-        btn_select_shape.setTitle("정방형", for: .normal);
+        btn_select_shape.setTitle("장방형", for: .normal);
     }//end of shapeRquare
     
     @objc func shapeEtc()->(){
@@ -336,7 +397,7 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
     @IBAction func selectShape(_ sender: UIButton) {
         btn_select_shape.setTitle("모양", for: .normal);
     }//end of selectShape
-    
+        
     
     //------------------------------------------------------------------------------------------------------
     //selectColor
@@ -454,9 +515,13 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
     
     //select print
     
-    @IBAction func selectInputPrint(_ sender: UIButton) {
-        btn_select_print.setTitle(tf_select_print.text, for: .normal)
-    }//end of selectInputPrint
+    @objc func textFieldDidChanacgePrint(_ sender: Any?) {
+        if tf_select_print.text=="" {
+            btn_select_print.setTitle("마크", for: .normal)
+        }else{
+            btn_select_print.setTitle(tf_select_print.text, for: .normal)
+        }//end of else if
+    }//end of textFieldDidChanacgePrint
     
     @IBAction func selectPrint(_ sender: UIButton) {
         btn_select_print.setTitle("마크", for: .normal)
@@ -487,10 +552,14 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
     
 //------------------------------------------------------------------------------------------------------
   //select enptName
-    
-    @IBAction func selectInputEnptName(_ sender: UIButton) {
-        btn_select_enptName.setTitle(tf_select_enptName.text, for: .normal)
-    }//end of selectInputEnptName
+   
+    @objc func textFieldDidChanacgeEnptName(_ sender: Any?) {
+        if tf_select_enptName.text==""{
+            btn_select_enptName.setTitle("업체", for: .normal)
+        }else{
+            btn_select_enptName.setTitle(tf_select_enptName.text, for: .normal)
+        }//end of else if
+    }//end of textFieldDidChanacgeEnptName
     
     
     @IBAction func selectEnptName(_ sender: UIButton) {
@@ -523,6 +592,42 @@ class SearchViewController: UIViewController,UITextFieldDelegate {
         
         self.navigationController?.pushViewController(listVC, animated: true)
     }//end of searchInputAttribute
+    
+    //------------------------------------------------------------------------------------------------------
+    func selectFromCamera() {
+        print("카메라로 촬영하기를 선택하셨습니다")
+        self.imagePickerController.delegate = self
+        self.imagePickerController.sourceType = .camera
+        present(self.imagePickerController, animated: true, completion: nil)
+    }//end of selectFromCamera
+    
+    func selectFromGallery() {
+        print("갤러리에서 선택하기를 선택하셨습니다")
+        self.imagePickerController.delegate = self
+        self.imagePickerController.sourceType = .photoLibrary
+        present(self.imagePickerController, animated: true, completion: nil)
+    }//end of selectFromGallery
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        if let image = info[.originalImage] as? UIImage {
+            picker.dismiss(animated: true) {
+                if let imageSubVC = self.storyboard?.instantiateViewController(withIdentifier: "ImageSubViewController") as? ImageSubViewController {
+                    imageSubVC.sendSelectImg = image
+                    imageSubVC.modalPresentationStyle = .automatic
+                    self.present(imageSubVC, animated: true, completion: nil)
+                } else {
+                    fatalError("Failed to instantiate ImageSubViewController from storyboard.")
+                }//end of if let
+            }//end of picker
+        }else{
+            fatalError("선택된 이미지를 불러오지 못했습니다 ")
+        }//end of else if let
+    }//end of imagePickerController
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }//end of imagePickerControllerDidCancel
     
 
 }//end of class

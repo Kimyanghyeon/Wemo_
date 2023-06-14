@@ -38,7 +38,6 @@ class ListViewController: UIViewController,UITableViewDelegate, UITableViewDataS
     var str_label_enptName : String = ""
     
     
-    
     var conditional:String = ""
     
     let dbHelper = DBHelper.shared
@@ -59,9 +58,20 @@ class ListViewController: UIViewController,UITableViewDelegate, UITableViewDataS
         
         tableview.rowHeight = 200
         
-        
+        // Create a custom back button
+                let backButton = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonPressed))
+                navigationItem.leftBarButtonItem = backButton
         
     }//end of viewDidLoad
+    
+
+    @objc func backButtonPressed() {
+        navigationController?.popViewController(animated: true)
+        if let searchViewController = navigationController?.topViewController as? SearchViewController {
+            searchViewController.resetSelect()
+        }//end of searchViewController
+    }//end of backButtonPressed
+    
     
 //    func start(){
 //        self.dataArray = dbHelper.readData()
@@ -78,7 +88,7 @@ class ListViewController: UIViewController,UITableViewDelegate, UITableViewDataS
             
         }else{
             if label_name.text != "이름 및 명칭"{
-                conditional += "ITEM_NAME LIKE \"%"+label_name.text!+"%\""
+                conditional += "(ITEM_NAME LIKE \"%"+label_name.text!+"%\" or CLASS_NAME LIKE \"%"+label_name.text!+"%\")"
 
                 if label_shape.text != "모양" || label_color.text != "색상" || label_formulation.text != "제형" || label_dividingLine.text != "분할선" || label_print.text != "마크" || label_etcOtcName.text != "구분" || label_enptName.text != "업체"{
                     conditional+=" AND "
@@ -153,7 +163,7 @@ class ListViewController: UIViewController,UITableViewDelegate, UITableViewDataS
             }//end of if
             
             if label_enptName.text != "업체"{
-                conditional += " ENTP_NAME = \""+label_enptName.text!+"\""
+                conditional += " ENTP_NAME LIKE \"%"+label_enptName.text!+"%\""
             }//end of if
             
             self.dataArray = dbHelper.readSelectData(conditional: conditional) // select

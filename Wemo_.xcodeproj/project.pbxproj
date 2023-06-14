@@ -3,24 +3,18 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 55;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F296D6C2A2D9E8E008EA44B /* ImageSubViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F296D6B2A2D9E8E008EA44B /* ImageSubViewController.swift */; };
 		2F4468232A0B1CB900047285 /* MoreInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4468222A0B1CB900047285 /* MoreInfoViewController.swift */; };
-		2F77409B2A15B2B9000A2932 /* DaumMap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F77409A2A15B2B9000A2932 /* DaumMap.framework */; };
-		2F77409E2A15B2CD000A2932 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F77409D2A15B2CD000A2932 /* OpenGLES.framework */; };
-		2F7740A02A15B2DA000A2932 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F77409F2A15B2DA000A2932 /* SystemConfiguration.framework */; };
-		2F7740A22A15B2E3000A2932 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F7740A12A15B2E3000A2932 /* CoreLocation.framework */; };
-		2F7740A42A15B2EB000A2932 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F7740A32A15B2EB000A2932 /* QuartzCore.framework */; };
-		2F7740A62A15B2FA000A2932 /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F7740A52A15B2F6000A2932 /* libc++.tbd */; };
-		2F7740A82A15B306000A2932 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F7740A72A15B302000A2932 /* libxml2.tbd */; };
-		2F7740AA2A15B31C000A2932 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F7740A92A15B316000A2932 /* libsqlite3.tbd */; };
-		2FC036E52A09E3BD009E639A /* MedicinesDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 2FC036E42A09E3BD009E639A /* MedicinesDB.sqlite */; };
+		2F6060B82A305CA9003D4CE1 /* PopUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F6060B72A305CA9003D4CE1 /* PopUpViewController.swift */; };
 		2FC4D36B2A07714600CFF250 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC4D36A2A07714600CFF250 /* SearchViewController.swift */; };
 		2FC4D36D2A0784DD00CFF250 /* DBHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC4D36C2A0784DD00CFF250 /* DBHelper.swift */; };
 		2FC4D36F2A07859500CFF250 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC4D36E2A07859500CFF250 /* ListViewController.swift */; };
 		2FC4D3712A078C6700CFF250 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC4D3702A078C6700CFF250 /* ListTableViewCell.swift */; };
+		2FCE50D32A2B3AB500FD8272 /* MedicinesDB.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 2FCE50D22A2B3AB500FD8272 /* MedicinesDB.sqlite */; };
 		2FE1277A2A075A6D00A6EDF5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE127792A075A6D00A6EDF5 /* AppDelegate.swift */; };
 		2FE1277C2A075A6D00A6EDF5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1277B2A075A6D00A6EDF5 /* SceneDelegate.swift */; };
 		2FE1277E2A075A6D00A6EDF5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1277D2A075A6D00A6EDF5 /* ViewController.swift */; };
@@ -28,45 +22,17 @@
 		2FE127842A075A6D00A6EDF5 /* Wemo_.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2FE127822A075A6D00A6EDF5 /* Wemo_.xcdatamodeld */; };
 		2FE127862A075A6E00A6EDF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127852A075A6E00A6EDF5 /* Assets.xcassets */; };
 		2FE127892A075A6E00A6EDF5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127872A075A6E00A6EDF5 /* LaunchScreen.storyboard */; };
-		2FE1279C2A075B7B00A6EDF5 /* Pretendard-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127932A075B7B00A6EDF5 /* Pretendard-Regular.otf */; };
-		2FE1279D2A075B7B00A6EDF5 /* Pretendard-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127942A075B7B00A6EDF5 /* Pretendard-Black.otf */; };
-		2FE1279E2A075B7B00A6EDF5 /* Pretendard-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127952A075B7B00A6EDF5 /* Pretendard-Medium.otf */; };
-		2FE1279F2A075B7B00A6EDF5 /* Pretendard-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127962A075B7B00A6EDF5 /* Pretendard-Light.otf */; };
-		2FE127A02A075B7B00A6EDF5 /* Pretendard-ExtraBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127972A075B7B00A6EDF5 /* Pretendard-ExtraBold.otf */; };
-		2FE127A12A075B7B00A6EDF5 /* Pretendard-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127982A075B7B00A6EDF5 /* Pretendard-Bold.otf */; };
-		2FE127A22A075B7B00A6EDF5 /* Pretendard-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE127992A075B7B00A6EDF5 /* Pretendard-Thin.otf */; };
-		2FE127A32A075B7B00A6EDF5 /* Pretendard-ExtraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE1279A2A075B7B00A6EDF5 /* Pretendard-ExtraLight.otf */; };
-		2FE127A42A075B7B00A6EDF5 /* Pretendard-SemiBold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FE1279B2A075B7B00A6EDF5 /* Pretendard-SemiBold.otf */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		2F36847D2A1F2019008C86C3 /* Embed Libraries */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Libraries";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
+		2F296D6B2A2D9E8E008EA44B /* ImageSubViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSubViewController.swift; sourceTree = "<group>"; };
 		2F4468222A0B1CB900047285 /* MoreInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreInfoViewController.swift; sourceTree = "<group>"; };
-		2F77409A2A15B2B9000A2932 /* DaumMap.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = DaumMap.framework; sourceTree = "<group>"; };
-		2F77409D2A15B2CD000A2932 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
-		2F77409F2A15B2DA000A2932 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		2F7740A12A15B2E3000A2932 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
-		2F7740A32A15B2EB000A2932 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		2F7740A52A15B2F6000A2932 /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
-		2F7740A72A15B302000A2932 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
-		2F7740A92A15B316000A2932 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		2FC036E42A09E3BD009E639A /* MedicinesDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = MedicinesDB.sqlite; sourceTree = "<group>"; };
+		2F6060B72A305CA9003D4CE1 /* PopUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopUpViewController.swift; sourceTree = "<group>"; };
 		2FC4D36A2A07714600CFF250 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		2FC4D36C2A0784DD00CFF250 /* DBHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DBHelper.swift; sourceTree = "<group>"; };
 		2FC4D36E2A07859500CFF250 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
 		2FC4D3702A078C6700CFF250 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
+		2FCE50D22A2B3AB500FD8272 /* MedicinesDB.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = MedicinesDB.sqlite; sourceTree = "<group>"; };
 		2FE127762A075A6D00A6EDF5 /* Wemo_.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Wemo_.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2FE127792A075A6D00A6EDF5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2FE1277B2A075A6D00A6EDF5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -77,15 +43,6 @@
 		2FE127882A075A6E00A6EDF5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2FE1278A2A075A6E00A6EDF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2FE127912A075ADD00A6EDF5 /* Wemo-Birdging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Wemo-Birdging-Header.h"; sourceTree = "<group>"; };
-		2FE127932A075B7B00A6EDF5 /* Pretendard-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Regular.otf"; sourceTree = "<group>"; };
-		2FE127942A075B7B00A6EDF5 /* Pretendard-Black.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Black.otf"; sourceTree = "<group>"; };
-		2FE127952A075B7B00A6EDF5 /* Pretendard-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Medium.otf"; sourceTree = "<group>"; };
-		2FE127962A075B7B00A6EDF5 /* Pretendard-Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Light.otf"; sourceTree = "<group>"; };
-		2FE127972A075B7B00A6EDF5 /* Pretendard-ExtraBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraBold.otf"; sourceTree = "<group>"; };
-		2FE127982A075B7B00A6EDF5 /* Pretendard-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Bold.otf"; sourceTree = "<group>"; };
-		2FE127992A075B7B00A6EDF5 /* Pretendard-Thin.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-Thin.otf"; sourceTree = "<group>"; };
-		2FE1279A2A075B7B00A6EDF5 /* Pretendard-ExtraLight.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-ExtraLight.otf"; sourceTree = "<group>"; };
-		2FE1279B2A075B7B00A6EDF5 /* Pretendard-SemiBold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Pretendard-SemiBold.otf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,41 +50,17 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F7740A62A15B2FA000A2932 /* libc++.tbd in Frameworks */,
-				2F7740A42A15B2EB000A2932 /* QuartzCore.framework in Frameworks */,
-				2F7740AA2A15B31C000A2932 /* libsqlite3.tbd in Frameworks */,
-				2F7740A22A15B2E3000A2932 /* CoreLocation.framework in Frameworks */,
-				2F7740A82A15B306000A2932 /* libxml2.tbd in Frameworks */,
-				2F77409B2A15B2B9000A2932 /* DaumMap.framework in Frameworks */,
-				2F7740A02A15B2DA000A2932 /* SystemConfiguration.framework in Frameworks */,
-				2F77409E2A15B2CD000A2932 /* OpenGLES.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		2F77409C2A15B2CC000A2932 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				2F7740A92A15B316000A2932 /* libsqlite3.tbd */,
-				2F7740A72A15B302000A2932 /* libxml2.tbd */,
-				2F7740A52A15B2F6000A2932 /* libc++.tbd */,
-				2F7740A32A15B2EB000A2932 /* QuartzCore.framework */,
-				2F7740A12A15B2E3000A2932 /* CoreLocation.framework */,
-				2F77409F2A15B2DA000A2932 /* SystemConfiguration.framework */,
-				2F77409D2A15B2CD000A2932 /* OpenGLES.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		2FE1276D2A075A6D00A6EDF5 = {
 			isa = PBXGroup;
 			children = (
-				2F77409A2A15B2B9000A2932 /* DaumMap.framework */,
 				2FE127782A075A6D00A6EDF5 /* Wemo_ */,
 				2FE127772A075A6D00A6EDF5 /* Products */,
-				2F77409C2A15B2CC000A2932 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -146,6 +79,9 @@
 				2FE1277B2A075A6D00A6EDF5 /* SceneDelegate.swift */,
 				2FE1277D2A075A6D00A6EDF5 /* ViewController.swift */,
 				2FE1277F2A075A6D00A6EDF5 /* Main.storyboard */,
+				2F6060B72A305CA9003D4CE1 /* PopUpViewController.swift */,
+				2F296D6B2A2D9E8E008EA44B /* ImageSubViewController.swift */,
+				2FCE50D22A2B3AB500FD8272 /* MedicinesDB.sqlite */,
 				2F4468222A0B1CB900047285 /* MoreInfoViewController.swift */,
 				2FC4D3702A078C6700CFF250 /* ListTableViewCell.swift */,
 				2FC4D36E2A07859500CFF250 /* ListViewController.swift */,
@@ -153,30 +89,11 @@
 				2FC4D36A2A07714600CFF250 /* SearchViewController.swift */,
 				2FE127912A075ADD00A6EDF5 /* Wemo-Birdging-Header.h */,
 				2FE127852A075A6E00A6EDF5 /* Assets.xcassets */,
-				2FC036E42A09E3BD009E639A /* MedicinesDB.sqlite */,
 				2FE127872A075A6E00A6EDF5 /* LaunchScreen.storyboard */,
 				2FE1278A2A075A6E00A6EDF5 /* Info.plist */,
 				2FE127822A075A6D00A6EDF5 /* Wemo_.xcdatamodeld */,
-				2FE127922A075B7B00A6EDF5 /* Font */,
 			);
 			path = Wemo_;
-			sourceTree = "<group>";
-		};
-		2FE127922A075B7B00A6EDF5 /* Font */ = {
-			isa = PBXGroup;
-			children = (
-				2FE127932A075B7B00A6EDF5 /* Pretendard-Regular.otf */,
-				2FE127942A075B7B00A6EDF5 /* Pretendard-Black.otf */,
-				2FE127952A075B7B00A6EDF5 /* Pretendard-Medium.otf */,
-				2FE127962A075B7B00A6EDF5 /* Pretendard-Light.otf */,
-				2FE127972A075B7B00A6EDF5 /* Pretendard-ExtraBold.otf */,
-				2FE127982A075B7B00A6EDF5 /* Pretendard-Bold.otf */,
-				2FE127992A075B7B00A6EDF5 /* Pretendard-Thin.otf */,
-				2FE1279A2A075B7B00A6EDF5 /* Pretendard-ExtraLight.otf */,
-				2FE1279B2A075B7B00A6EDF5 /* Pretendard-SemiBold.otf */,
-			);
-			name = Font;
-			path = ../../Wemo/Wemo/Font;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,7 +106,6 @@
 				2FE127722A075A6D00A6EDF5 /* Sources */,
 				2FE127732A075A6D00A6EDF5 /* Frameworks */,
 				2FE127742A075A6D00A6EDF5 /* Resources */,
-				2F36847D2A1F2019008C86C3 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -216,7 +132,7 @@
 				};
 			};
 			buildConfigurationList = 2FE127712A075A6D00A6EDF5 /* Build configuration list for PBXProject "Wemo_" */;
-			compatibilityVersion = "Xcode 13.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -239,18 +155,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				2FE127892A075A6E00A6EDF5 /* LaunchScreen.storyboard in Resources */,
-				2FE127A22A075B7B00A6EDF5 /* Pretendard-Thin.otf in Resources */,
-				2FE1279C2A075B7B00A6EDF5 /* Pretendard-Regular.otf in Resources */,
-				2FE127A42A075B7B00A6EDF5 /* Pretendard-SemiBold.otf in Resources */,
-				2FE127A02A075B7B00A6EDF5 /* Pretendard-ExtraBold.otf in Resources */,
+				2FCE50D32A2B3AB500FD8272 /* MedicinesDB.sqlite in Resources */,
 				2FE127862A075A6E00A6EDF5 /* Assets.xcassets in Resources */,
 				2FE127812A075A6D00A6EDF5 /* Main.storyboard in Resources */,
-				2FE1279F2A075B7B00A6EDF5 /* Pretendard-Light.otf in Resources */,
-				2FE1279D2A075B7B00A6EDF5 /* Pretendard-Black.otf in Resources */,
-				2FE127A12A075B7B00A6EDF5 /* Pretendard-Bold.otf in Resources */,
-				2FE1279E2A075B7B00A6EDF5 /* Pretendard-Medium.otf in Resources */,
-				2FE127A32A075B7B00A6EDF5 /* Pretendard-ExtraLight.otf in Resources */,
-				2FC036E52A09E3BD009E639A /* MedicinesDB.sqlite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +172,9 @@
 				2FC4D3712A078C6700CFF250 /* ListTableViewCell.swift in Sources */,
 				2FC4D36D2A0784DD00CFF250 /* DBHelper.swift in Sources */,
 				2FE1277E2A075A6D00A6EDF5 /* ViewController.swift in Sources */,
+				2F296D6C2A2D9E8E008EA44B /* ImageSubViewController.swift in Sources */,
 				2FE127842A075A6D00A6EDF5 /* Wemo_.xcdatamodeld in Sources */,
+				2F6060B82A305CA9003D4CE1 /* PopUpViewController.swift in Sources */,
 				2FE1277A2A075A6D00A6EDF5 /* AppDelegate.swift in Sources */,
 				2F4468232A0B1CB900047285 /* MoreInfoViewController.swift in Sources */,
 				2FE1277C2A075A6D00A6EDF5 /* SceneDelegate.swift in Sources */,
@@ -345,7 +254,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -399,7 +308,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -421,11 +330,10 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/IOS_DaumMap_SDK_1.4.0/lib/DaumMap.embeddedframework",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Pods\n$(PROJECT_DIR)/Pods\n",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Wemo_/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -436,10 +344,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/homebrew/Cellar/proj/9.2.0_1/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "inhatc.Wemo-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -462,11 +367,10 @@
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/IOS_DaumMap_SDK_1.4.0/lib/DaumMap.embeddedframework",
 					"$(PROJECT_DIR)",
-					"$(PROJECT_DIR)/Pods\n",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = Wemo_/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -477,10 +381,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					/opt/homebrew/Cellar/proj/9.2.0_1/lib,
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "inhatc.Wemo-";
 				PRODUCT_NAME = "$(TARGET_NAME)";

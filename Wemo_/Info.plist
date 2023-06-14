@@ -2,14 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>사진 권한이 필요합니다</string>
+	<key>NSCameraUsageDescription</key>
+	<string>카메라 권한이 필요합니다</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>위치정보 권한이 필요합니다</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>위치정보 권한이 필요합니다</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>위치정보 권한이 필요합니다</string>
-	<key>KAKAO_APP_KEY</key>
-	<string>0fd87029c0c61bb7441cc20f3d0b8c2c</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

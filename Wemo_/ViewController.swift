@@ -6,48 +6,22 @@
 //
 
 import UIKit
+import MapKit
 import CoreLocation
 
-struct getPrescription : Codable{
-    var SERVICE_NAME : String
-    var BUSINESS_STATUS_CODE : String
-    var BUSINESS_STATUS_NAME : String
-    var COMPANY_PHONE_NUMBER : String
-    var COMPANY_POSTAL_ADDRESS : String
-    var COMPANY_ALL_ADDRESS : String
-    var COMPANY_ROAD_NAME_ADDRESS : String
-    var COMPANY_ROAD_NAME_POSTAL_ADDRESS : String
-    var COMPANY_NAME : String
-    var COMPANY_LOCATION_X : Double
-    var COMPANY_LOCATION_Y : Double
-}//end of getPrescription
-
-struct Location {
-    let latitude: Double
-    let longitude: Double
-}//end of Location
-
-class ViewController: UIViewController , MTMapViewDelegate,CLLocationManagerDelegate{
+class ViewController: UIViewController , CLLocationManagerDelegate,UITextFieldDelegate,MKMapViewDelegate{
     
-    @IBOutlet var view_mapContent: UIView!
+    @IBOutlet var tf_input: UITextField!
+    
+    @IBOutlet var myMap: MKMapView!
     
     
-    @IBOutlet var zoomIn: UIButton!
-    @IBOutlet var zoomOut: UIButton!
+    @IBOutlet var label_location_info: UILabel!
     
-    var mapView: MTMapView?
-        
+    @IBOutlet var sw_userLoc: UISwitch!
     
-    var userLatitude : Double = 0.0
-    var userLongitude : Double = 0.0
+    @IBOutlet var btn_select_CameraORGallery: UIButton!
     
-    var allCircle = [MTMapCircle]()
-    
-    //사용자 위치
-    var locationManger = CLLocationManager()
-    
-    //zoomLevel
-    var zoomLevel : Int = 2
     
     //Prescription
     var str_service_name : String! = ""
@@ -62,234 +36,327 @@ class ViewController: UIViewController , MTMapViewDelegate,CLLocationManagerDele
     var str_company_location_x : Double! = 0.0
     var str_company_location_y : Double! = 0.0
     
+    //SelectItemName
+    var str_item_name_select : String = ""
+    var str_etc_otc_name_select : String = ""
+    
+    let locManager = CLLocationManager()
+    
     var conditional:String = ""
     
-    var company_name : Array<String> = []
+    var mapLocation: CLLocation?
     
+    //위치 정보
     let dbHelper = DBHelper.shared
     var dataArray: [Prescription] = []
     
-    let TO_GPS_FROM_GRID = 2
-    let TO_GRID = 1
-    let TO_GPS = 2
+    //약 정보
+    var dataArray_medicines: [SelectItemName] = []
+    
+    // Create an array to store the added markers
+    var addedMarkers: [MKPointAnnotation] = []
+    
+    var str_locality : String = ""
+    var str_subLocality : String = ""
+    
+    //약 이름
+    var str_medicines_name : String = ""
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setMapView()
-        getUserLocation()
-        start()
-
-   }//end of viewDidLoad
-    
-    func setMapView() {
-        mapView = MTMapView(frame: view_mapContent.frame)
-        mapView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         
-        if let mapView = mapView {
-            mapView.delegate = self
-            mapView.baseMapType = .standard
-            
-
-            locationManger.delegate = self
-            locationManger.requestWhenInUseAuthorization()
-            locationManger.startUpdatingLocation()
+        locManager.delegate = self
+        locManager.desiredAccuracy = kCLLocationAccuracyBest //정확도
+        locManager.requestWhenInUseAuthorization() //위치추적
+        locManager.startUpdatingLocation() //위치 업데이트
+        
+        myMap.delegate = self
+        //Cannot assign value of type 'ViewController' to type '(any MKMapViewDelegate)?'
+        myMap.showsUserLocation = true // 위치값 공개
+        
+        tf_input.delegate = self
+        
+    }//end of viewDidLoad
     
-            view_mapContent.addSubview(mapView)
-            view_mapContent.addSubview(zoomIn)
-            view_mapContent.addSubview(zoomOut)
-            
-            //강제 제약조건
-            mapView.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                mapView.leadingAnchor.constraint(equalTo: view_mapContent.leadingAnchor),
-                mapView.trailingAnchor.constraint(equalTo: view_mapContent.trailingAnchor),
-                mapView.topAnchor.constraint(equalTo: view_mapContent.topAnchor),
-                mapView.bottomAnchor.constraint(equalTo: view_mapContent.bottomAnchor)
-            ])//end of NSLayoutConstraint
-            
-//            print(view_mapContent.subviews)
-//            print(view_mapContent.isHidden)
-            
-            print("setMapView executed")
-        } else {
-            print("Failed to create mapView")
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.clearsOnBeginEditing = true
+        textField.resignFirstResponder() // Dismiss the keyboard
+        searchLocation()
+        return true
+    }//end of textFieldShouldReturn
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?){
+         self.view.endEditing(true)
+   }//end of touchesBegan
+    
+    @IBAction func sw_userLoc(_ sender: UISwitch) {
+        if sender.isOn {
+            self.label_location_info.text = ""
+            locManager.stopUpdatingLocation()
+            if let location = locManager.location {
+                goLocation(lat: location.coordinate.latitude, log: location.coordinate.longitude, delta: 0.01)
+                reverseGeocodeLocation(location)
+            }//end of if let
+        }else{
+            let centerCoordinate = myMap.centerCoordinate
+            let location = CLLocation(latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude)
+            reverseGeocodeLocation(location)
         }//end of else if
-        
-    }//end of setMapView
+    }//end of sw_userLoc
     
-    func getUserLocation() {
-        locationManger.desiredAccuracy = kCLLocationAccuracyBest
-        locationManger.requestWhenInUseAuthorization()
-        
-        if locationManger.authorizationStatus == .authorizedWhenInUse || locationManger.authorizationStatus == .authorizedAlways {
-            locationManger.startUpdatingLocation()
-        } else {
-            print("Location services authorization not granted.")
-        }//end of else if
-    }//end of getUserLocation
     
-    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        switch status {
-        case .authorizedAlways, .authorizedWhenInUse:
-            print("GPS 권한 설정 완료")
-        case .restricted, .notDetermined:
-            print("GPS 권한 설정 실패")
-        case .denied:
-            print("GPS 권한 설정 거부")
-        default:
-            print("GPS: Default")
-        }//end of switch
-    }//end of locationManager
+    func goLocation(lat:CLLocationDegrees, log : CLLocationDegrees, delta span : Double){
+        let pLocation = CLLocationCoordinate2DMake(lat, log)
+        let spanValue = MKCoordinateSpan(latitudeDelta: span, longitudeDelta: span)
+        let PRegion = MKCoordinateRegion(center: pLocation, span: spanValue)
+        myMap.setRegion(PRegion, animated: true)
+        // Update str_locality and str_subLocality
+        let coordinates = CLLocation(latitude: lat, longitude: log)
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(coordinates) { (placemarks, error) in
+            if let placemark = placemarks?.first {
+                self.str_locality = placemark.locality ?? ""
+                self.str_subLocality = placemark.subLocality ?? ""
+            }//end of if
+        }//end of geocoder
+    }//end of goLocation
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.last else { return }
-        
-        let latitude = location.coordinate.latitude
-        let longitude = location.coordinate.longitude
-        
-        print("Latitude: \(latitude)")
-        print("Longitude: \(longitude)")
-        
-        userLatitude = latitude
-        userLongitude = longitude
-        
-
-        let LocationNow = CLLocation(latitude: userLatitude, longitude: userLongitude)
+        if let pLocation = locations.last {
+            goLocation(lat: pLocation.coordinate.latitude, log: pLocation.coordinate.longitude, delta: 0.01)
+        }//end of if let pLoc
+        locManager.stopUpdatingLocation()
+    }//end of locationManager
+    
+    func reverseGeocodeLocation(_ location: CLLocation) {
         let geocoder = CLGeocoder()
-        let locale = Locale(identifier: "ko-kr")
-        geocoder.reverseGeocodeLocation(LocationNow, preferredLocale: locale, completionHandler: {(placemarks, error)in
-            if let address:[CLPlacemark]=placemarks{
-                if let country:String = address.last?.country{print(country)}
-                if let administrativeArea : String=address.last?.administrativeArea{print(administrativeArea)}
-                if let locality : String = address.last?.locality{print(locality)}
-                if let name:String = address.last?.name{print(name)}
-            }//end of if let
-        })//end of reverseGeocodeLocation
-        
-        if let mapView = mapView {
-            let poiItem = setUserLocationPoint(itemName: "내 위치", getla: userLatitude, getlo: userLongitude, markerType: MTMapPOIItemMarkerType.redPin)
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+            guard let placeMark = placemarks?.first else {
+                self.label_location_info.text = "Address not found"
+                return
+            }//end of geocoder
             
-            mapView.setMapCenter(poiItem.mapPoint, animated: true)
-            mapView.setZoomLevel(MTMapZoomLevel(zoomLevel), animated: true)
-            mapView.addPOIItems([poiItem])
-           // mapView.fitAreaToShowAllPOIItems()
+            let addressComponents = [placeMark.country, placeMark.locality, placeMark.name]
+            let address = addressComponents.compactMap { $0 }.joined(separator: " ")
+            let addArr: [String] = address.components(separatedBy: " ")
             
-            print("Map view is available")
-        } else {
-            print("Map view is not available")
-        }//end of let else if
-            
-        locationManger.stopUpdatingLocation()
-        
-        print("locationManager didUpdateLocations executed")
-        
-        printDataArray()
-        
-    }//end of locationManager
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Location manager failed with error: \(error.localizedDescription)")
-    }//end of locationManager
-    
-    func setUserLocationPoint(itemName: String, getla: Double, getlo: Double, markerType: MTMapPOIItemMarkerType) -> MTMapPOIItem {
-        let poiItem = MTMapPOIItem()
-        poiItem.itemName = itemName
-        poiItem.mapPoint = MTMapPoint(geoCoord: MTMapPointGeo(latitude: getla, longitude: getlo))
-        poiItem.markerType = markerType
-        
-        print("setUserLocationPoint executed")
-        
-        return poiItem
-    }//end of setUserLocationPoint
-    
-    
-    @IBAction func zoomIn(_ sender: UIButton) {
-        zoomLevel-=1
-        mapView?.setZoomLevel(MTMapZoomLevel(zoomLevel), animated: true)
-    }//end of zoomIn
-    
-    
-    @IBAction func zoomOut(_ sender: UIButton) {
-        zoomLevel+=1
-        mapView?.setZoomLevel(MTMapZoomLevel(zoomLevel), animated: true)
-    }//end of zoomOut
-    
-    func start(){
-        self.dataArray = dbHelper.readPrescriptionDataAll()
-        print(dataArray.count)
+            if addArr.count >= 5 {
+                self.str_locality = addArr[1]
+                self.str_subLocality = addArr[2]
+            } else {
+                self.str_locality = addArr.count >= 2 ? addArr[1] : " "
+                self.str_subLocality = addArr.count >= 3 ? addArr[2] : " "
+            }//end of if
 
-    }//end of start
-    
-    func setPrescriptionDataAll(){
-        
-        str_service_name = String(dataArray[0].SERVICE_NAME)
-        str_business_status_code = String(dataArray[1].BUSINESS_STATUS_CODE)
-        str_business_status_name = String(dataArray[2].BUSINESS_STATUS_NAME)
-        str_company_phone_number = String(dataArray[3].COMPANY_PHONE_NUMBER)
-        str_company_postal_address = String(dataArray[4].COMPANY_POSTAL_ADDRESS)
-        str_company_all_address = String(dataArray[5].COMPANY_ALL_ADDRESS)
-        str_company_road_name_address = String(dataArray[6].COMPANY_ROAD_NAME_ADDRESS)
-        str_company_road_name_postal_address = String(dataArray[7].COMPANY_ROAD_NAME_POSTAL_ADDRESS)
-        str_company_name = String(dataArray[8].COMPANY_NAME)
-        str_company_location_x = dataArray[9].COMPANY_LOCATION_X
-        str_company_location_y = dataArray[10].COMPANY_LOCATION_Y
-        
-        dataArray.append(Prescription(SERVICE_NAME: str_service_name, BUSINESS_STATUS_CODE: str_business_status_code, BUSINESS_STATUS_NAME: str_business_status_name, COMPANY_PHONE_NUMBER: str_company_phone_number, COMPANY_POSTAL_ADDRESS: str_company_postal_address, COMPANY_ALL_ADDRESS: str_company_all_address, COMPANY_ROAD_NAME_ADDRESS: str_company_road_name_address, COMPANY_ROAD_NAME_POSTAL_ADDRESS: str_company_road_name_postal_address, COMPANY_NAME: str_company_name, COMPANY_LOCATION_X: str_company_location_x, COMPANY_LOCATION_Y: str_company_location_y))
-        //Method for obtaining data from the DB containing the address
-        
-    }//end of func
-    
-    
-    func printDataArray() {
-        let userLocation = Location(latitude: userLatitude, longitude: userLongitude)
-        let nearestAddresses = findNearestAddresses(userLocation: userLocation, dataArray: dataArray)
-
-        print("Printing nearest addresses")
-        for (index, address) in nearestAddresses.enumerated() {
-            print(index + 1, "번째 값 출력")
-            print("업체 이름: ", address.COMPANY_NAME)
-            print("업체 주소: ", address.COMPANY_ALL_ADDRESS)
-            print("X 좌표: ", address.COMPANY_LOCATION_X)
-            print("Y 좌표: ", address.COMPANY_LOCATION_Y, "\n")
-        }//end of for
-    }//end of printDataArray
-
-    
-    func calculateDistance(userLocation: Location, addressLocation: Location) -> Double {
-        let earthRadius = 6371.0 // Earth's radius in kilometers
-        
-        let lat1Rad = userLocation.latitude * .pi / 180.0
-        let lon1Rad = userLocation.longitude * .pi / 180.0
-        let lat2Rad = addressLocation.latitude * .pi / 180.0
-        let lon2Rad = addressLocation.longitude * .pi / 180.0
-        
-        let dlat = lat2Rad - lat1Rad
-        let dlon = lon2Rad - lon1Rad
-        
-        let a = sin(dlat/2) * sin(dlat/2) + cos(lat1Rad) * cos(lat2Rad) * sin(dlon/2) * sin(dlon/2)
-        let c = 2 * atan2(sqrt(a), sqrt(1-a))
-        
-        let distance = earthRadius * c
-        
-        return distance
-    }// end of calculateDistance
-    
-    func findNearestAddresses(userLocation: Location, dataArray: [Prescription]) -> [Prescription] {
-        let sortedAddresses = dataArray.sorted { (prescription1, prescription2) -> Bool in
-            let location1 = Location(latitude: prescription1.COMPANY_LOCATION_X, longitude: prescription1.COMPANY_LOCATION_Y)
-            let location2 = Location(latitude: prescription2.COMPANY_LOCATION_X, longitude: prescription2.COMPANY_LOCATION_Y)
+            self.label_location_info.text = address
             
-            let distance1 = calculateDistance(userLocation: userLocation, addressLocation: location1)
-            let distance2 = calculateDistance(userLocation: userLocation, addressLocation: location2)
+        }//end of let
+    }//end of reverseGeocodeLocation
+    
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        let centerCoordinate = mapView.centerCoordinate
+        let location = CLLocation(latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude)
+        reverseGeocodeLocation(location)
+    }//end of mapView
+    
+    func searchLocation() {
+        if let searchQuery = tf_input.text, !searchQuery.isEmpty {
+            if searchQuery == "약국" {
+                conditional = "SERVICE_NAME = '약국' or COMPANY_ROAD_NAME_ADDRESS = '\(searchQuery)' or COMPANY_NAME = '\(searchQuery)'"
+            } else {
+                conditional = "SERVICE_NAME LIKE '%\(searchQuery)%' or COMPANY_ROAD_NAME_ADDRESS = '\(searchQuery)' or COMPANY_NAME = '\(searchQuery)'"
+            }//end of else if
             
-            return distance1 < distance2
+            self.dataArray = dbHelper.readPrescriptionData(conditional: conditional)
+            print(dataArray.count)
+        
+            if dataArray.count != 0 {
+                setPrescription()
+                if dataArray.count > 1 {
+                    searchLocalityQuery()
+                    searchNearbyLocation()
+                    
+                } else if dataArray.count == 1, let address = dataArray.first?.COMPANY_ROAD_NAME_ADDRESS, let companyName = dataArray.first?.COMPANY_NAME {
+                    geocodeCompanyAddress(address, companyName: companyName) { placemarks, error in
+                        if let placemark = placemarks?.first {
+                            let companyLocation = placemark.location
+                            DispatchQueue.main.async {
+                                self.goLocation(lat: companyLocation?.coordinate.latitude ?? 0.0, log: companyLocation?.coordinate.longitude ?? 0.0, delta: 0.01)
+                                self.reverseGeocodeLocation(companyLocation ?? CLLocation())
+                            }//end of DispatchQueue
+                        }//end of if let
+                    }//end of geocodeCompanyAddress
+                }//end of companyName
+            }else if dataArray.count == 0 {
+                guard let popupVC = self.storyboard?.instantiateViewController(identifier: "PopUpViewController")as? PopUpViewController else {
+                    return
+                }//end of popupVC
+                
+                
+                conditional = "ITEM_NAME = '\(searchQuery)'"
+                self.dataArray_medicines = dbHelper.readSelectDataItemName(conditional: conditional)
+                print(dataArray_medicines.count)
+                setSelectItemName()
+                
+                popupVC.modalPresentationStyle = .overCurrentContext
+                self.present(popupVC, animated: false, completion: nil)
+                
+                
+            }else {
+                label_location_info.text = "No results found"
+            }//end of else if
+        }//end of if searchQuery
+    }//end of searchLocation
+    
+    func geocodeAddress(_ address: String?, companyName: String?) {
+        guard let address = address, let companyName = companyName else {
+            return
         }//end of let
         
-        let nearestAddresses = Array(sortedAddresses.prefix(15))
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { [weak self] placemarks, error in
+            if let placemark = placemarks?.first {
+                let marker = MKPointAnnotation()
+                marker.coordinate = placemark.location?.coordinate ?? CLLocationCoordinate2D()
+                marker.title = companyName
+                
+                if let isMarkerAdded = self?.isMarkerAlreadyAdded(marker), !isMarkerAdded {
+                    self?.myMap.addAnnotation(marker)
+                    self?.addedMarkers.append(marker)
+                    
+                }//end of if
+            }//end of if let
+        }//end of geocoder
+    }//end of geocodeAddress
+    
+    func isMarkerAlreadyAdded(_ marker: MKPointAnnotation) -> Bool {
+        return addedMarkers.contains { addedMarker in
+            return addedMarker.coordinate.latitude == marker.coordinate.latitude &&
+            addedMarker.coordinate.longitude == marker.coordinate.longitude &&
+            addedMarker.title == marker.title
+        }//end of addedMarkers
+    }//end of isMarkerAlreadyAdded
+    
+    func setPrescription(){
+        for i in 0..<dataArray.count{
+            str_service_name = String(dataArray[i].SERVICE_NAME)
+            str_business_status_code = String(dataArray[i].BUSINESS_STATUS_CODE)
+            str_business_status_name = String(dataArray[i].BUSINESS_STATUS_NAME)
+            str_company_phone_number = String(dataArray[i].COMPANY_PHONE_NUMBER)
+            str_company_postal_address = String(dataArray[i].COMPANY_POSTAL_ADDRESS)
+            str_company_all_address = String(dataArray[i].COMPANY_ALL_ADDRESS)
+            str_company_road_name_address = String(dataArray[i].COMPANY_ROAD_NAME_ADDRESS)
+            str_company_road_name_postal_address = String(dataArray[i].COMPANY_ROAD_NAME_POSTAL_ADDRESS)
+            str_company_name = String(dataArray[i].COMPANY_NAME)
+            str_company_location_x = dataArray[i].COMPANY_LOCATION_X
+            str_company_location_y = dataArray[i].COMPANY_LOCATION_Y
+            
+            dataArray.append(Prescription(SERVICE_NAME: str_service_name, BUSINESS_STATUS_CODE: str_business_status_code, BUSINESS_STATUS_NAME: str_business_status_name, COMPANY_PHONE_NUMBER: str_company_phone_number, COMPANY_POSTAL_ADDRESS: str_company_postal_address, COMPANY_ALL_ADDRESS: str_company_all_address, COMPANY_ROAD_NAME_ADDRESS: str_company_road_name_address, COMPANY_ROAD_NAME_POSTAL_ADDRESS: str_company_road_name_postal_address, COMPANY_NAME: str_company_name, COMPANY_LOCATION_X: str_company_location_x, COMPANY_LOCATION_Y: str_company_location_y))
+        }//end of for
         
-        return nearestAddresses
-    }//end of findNearestAddresses
+        //print(dataArray)
+        
+    }//end of setPrescription
+    
+    func setSelectItemName(){
+        for i in 0..<dataArray_medicines.count{
+            str_item_name_select = dataArray_medicines[i].ITEM_NAME_SElECT
+            str_etc_otc_name_select = dataArray_medicines[i].ETC_OTC_NAME_SElECT
+            dataArray_medicines.append(SelectItemName(ITEM_NAME_SElECT: str_item_name_select, ETC_OTC_NAME_SElECT: str_etc_otc_name_select))
+            checkSelectItemName(etc_otc_name : str_etc_otc_name_select)
+        }//end of for
+
+    }//end of setSelectItemName
+    
+    func checkSelectItemName(etc_otc_name : String){
+        if etc_otc_name == "일반(안전상비)"{
+            conditional = "SERVICE_NAME = '안전상비의약품 판매업소'and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_locality)%' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_subLocality)%'"
+            self.dataArray = dbHelper.readPrescriptionData(conditional: conditional)
+            print(dataArray.count)
+            setPrescription()
+            searchNearbyLocation()
+        }else if etc_otc_name == "일반의약품"{
+            conditional = "SERVICE_NAME = '약국'and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_locality)%' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_subLocality)%'"
+            self.dataArray = dbHelper.readPrescriptionData(conditional: conditional)
+            print(dataArray.count)
+            setPrescription()
+            searchNearbyLocation()
+        }//end of else if
+    }//end of checkSelectItemName
+    
+    func searchLocalityQuery(){
+        print("userLocation : \(String(describing: label_location_info.text))")
+
+        if let searchQuery = tf_input.text, !searchQuery.isEmpty {
+            if searchQuery == "약국" {
+                conditional = "SERVICE_NAME = '약국' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_locality)%' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_subLocality)%' or COMPANY_NAME = '\(searchQuery)'"
+            } else {
+                conditional = "SERVICE_NAME LIKE '%\(searchQuery)%' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_locality)%' and COMPANY_ROAD_NAME_ADDRESS LIKE '%\(str_subLocality)%' or COMPANY_NAME = '\(searchQuery)'"
+            }//end of else if
+            self.dataArray = dbHelper.readPrescriptionData(conditional: conditional)
+            print(dataArray.count)
+        }//end of searchQuery
+    }//end of searchLocalityQuery
+
+    func searchNearbyLocation() {
+        let userLocation = CLLocation(latitude: locManager.location?.coordinate.latitude ?? 0.0, longitude: locManager.location?.coordinate.longitude ?? 0.0)
+        
+        print("userLocation : \(String(describing: label_location_info.text))")
+        
+        myMap.removeAnnotations(myMap.annotations)
+        
+        for data in dataArray{
+            let marker = MKPointAnnotation()
+            let companyName = data.COMPANY_NAME
+            let companyAddress = data.COMPANY_ROAD_NAME_ADDRESS
+            
+            geocodeCompanyAddress(companyAddress, companyName: companyName) { placemarks, error in
+                if let placemark = placemarks?.first {
+                    let companyLocation = placemark.location
+                    marker.coordinate = companyLocation?.coordinate ?? CLLocationCoordinate2D()
+                    marker.title = companyName
+                    marker.subtitle = companyAddress
+                    
+                    if self.sw_userLoc.isOn {
+                        DispatchQueue.main.async {
+                            self.myMap.addAnnotation(marker)
+                            self.myMap.setCenter(userLocation.coordinate, animated: true)
+                        } //end of DispatchQueue closure
+                    }else{
+                        DispatchQueue.main.async {
+                            let centerCoordinate = self.myMap.centerCoordinate
+                            let location = CLLocation(latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude)
+                            self.myMap.addAnnotation(marker)
+                            self.myMap.setCenter(location.coordinate, animated: true)
+                        } //end of DispatchQueue closure
+                    }//end of else if
+                    
+                } //end of if let statement
+            } //end of geocodeCompanyAddress closure
+            
+        } //end of for
+        
+        print("Search completed")
+    } //end of searchNearbyLocation function
+
+    
+    func geocodeCompanyAddress(_ address: String?, companyName: String?, completion: @escaping ([CLPlacemark]?, Error?) -> Void) {
+        guard let address = address else {
+            return
+        }//end of let
+        
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address) { placemarks, error in
+            completion(placemarks, error)
+        }//end of let
+    }//end of geocodeCompanyAddress
+    
+
+    
+    
     
 }//end of class
+
+
 

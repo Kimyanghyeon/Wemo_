@@ -39,6 +39,10 @@ struct MoreInfo : Codable{
     var BIZRNO : String
 }//end of MoreInfo
 
+struct SelectItemName:Codable{
+    var ITEM_NAME_SElECT : String
+    var ETC_OTC_NAME_SElECT : String
+}//end of
 
 struct Prescription : Codable{
     var SERVICE_NAME : String
@@ -62,6 +66,7 @@ struct LatXLngY {
 }//end of LatXLngY
 
 import Foundation
+
 
 class DBHelper{
     
@@ -99,6 +104,10 @@ class DBHelper{
     var OPEN_DE : String! = ""
     var UPDATE_DE : String! = ""
     var BIZRNO : String! = ""
+    
+    //SelectItemName
+    var ITEM_NAME_SElECT : String = ""
+    var ETC_OTC_NAME_SElECT : String = ""
     
     //Prescription
     var SERVICE_NAME : String! = ""
@@ -375,6 +384,43 @@ class DBHelper{
             return result
         }//end of readSelectData
     
+    func readSelectDataItemName(conditional:String) -> [SelectItemName] {
+            let query: String = "SELECT ETC_OTC_NAME from Medicines_Basic_Info_edit where "
+            let finalQuery = query+conditional+";"
+            var stmt: OpaquePointer? = nil
+            // 아래는 [MyModel]? 이 되면 값이 안 들어감
+            // Nil을 인식하지 못하는 것으로.. ㅎ
+            var result: [SelectItemName] = []
+
+            if sqlite3_prepare(self.db, finalQuery, -1, &stmt, nil) != SQLITE_OK {
+                let errorMessage = String(cString: sqlite3_errmsg(db)!)
+                print("error while prepare: \(errorMessage)")
+                return result
+            }//end of if
+        
+            print(finalQuery)
+        
+            while sqlite3_step(stmt) == SQLITE_ROW {
+                
+                if sqlite3_column_type(stmt, 0) != SQLITE_NULL {
+                    ITEM_NAME_SElECT = String(cString: sqlite3_column_text(stmt, 0))
+                } else {
+                    ITEM_NAME_SElECT = " "
+                }//end of if
+                if sqlite3_column_type(stmt, 0) != SQLITE_NULL {
+                    ETC_OTC_NAME_SElECT = String(cString: sqlite3_column_text(stmt, 0))
+                } else {
+                    ETC_OTC_NAME_SElECT = " "
+                }//end of if
+                
+                result.append(SelectItemName(ITEM_NAME_SElECT: ITEM_NAME_SElECT, ETC_OTC_NAME_SElECT: ETC_OTC_NAME_SElECT))
+            }//end of while
+        
+            sqlite3_finalize(stmt)
+            
+            return result
+        }//end of readSelectData
+    
     func readMoreInfoData(conditional:String) -> [MoreInfo] {
         let query: String = "SELECT * from Medicines_Usage_Info WHERE ITEM_SEQ = (SELECT ITEM_SEQ from Medicines_Basic_Info_edit_process WHERE ITEM_NAME= \""
         let finalQuery = query+conditional+"\");"
@@ -552,36 +598,19 @@ class DBHelper{
                 COMPANY_NAME = " "
             }//end of if
             
-            if let cString = sqlite3_column_text(stmt, 9) {
-                let stringValue = String(cString: cString)
-                if let doubleValue = Double(stringValue) {
-                    //I made a function to convert it myself, but it was difficult, so I think I need to convert it through the library
-                    let convertedCoordinates = convertGRID_GPS1(mode: TO_GPS, lat_X: doubleValue, lng_Y: COMPANY_LOCATION_Y)
-                    COMPANY_LOCATION_X = convertedCoordinates.lat
-                } else {
-                    COMPANY_LOCATION_X = 0.0
-                }//end of else if let
+            if let columnValue = sqlite3_column_text(stmt, 9) {
+                let stringValue = String(cString: columnValue)
+                COMPANY_LOCATION_X = Double(stringValue) ?? 0.0
             } else {
                 COMPANY_LOCATION_X = 0.0
-            }//end of else if let
-
-            if sqlite3_column_type(stmt, 10) != SQLITE_NULL {
-                if let cString = sqlite3_column_text(stmt, 10) {
-                    let stringValue = String(cString: cString)
-                    if let doubleValue = Double(stringValue) {
-                        let convertedCoordinates = convertGRID_GPS1(mode: TO_GPS, lat_X: COMPANY_LOCATION_X, lng_Y: doubleValue)
-                        COMPANY_LOCATION_Y = convertedCoordinates.lng
-                    } else {
-                        // Handle conversion error for COMPANY_LOCATION_Y
-                        COMPANY_LOCATION_Y = 0.0
-                    }//end of else if let
-                } else {
-                    // Handle retrieval error for COMPANY_LOCATION_Y
-                    COMPANY_LOCATION_Y = 0.0
-                }//end of else if let
+            }//end of else if
+            
+            if let columnValue = sqlite3_column_text(stmt, 10) {
+                let stringValue = String(cString: columnValue)
+                COMPANY_LOCATION_Y = Double(stringValue) ?? 0.0
             } else {
                 COMPANY_LOCATION_Y = 0.0
-            }//end of else if let
+            }//end of else if
 
             result.append(Prescription(SERVICE_NAME: SERVICE_NAME, BUSINESS_STATUS_CODE: BUSINESS_STATUS_CODE, BUSINESS_STATUS_NAME: BUSINESS_STATUS_NAME, COMPANY_PHONE_NUMBER: COMPANY_PHONE_NUMBER, COMPANY_POSTAL_ADDRESS: COMPANY_POSTAL_ADDRESS, COMPANY_ALL_ADDRESS: COMPANY_ALL_ADDRESS, COMPANY_ROAD_NAME_ADDRESS: COMPANY_ROAD_NAME_ADDRESS, COMPANY_ROAD_NAME_POSTAL_ADDRESS: COMPANY_ROAD_NAME_POSTAL_ADDRESS, COMPANY_NAME: COMPANY_NAME, COMPANY_LOCATION_X: COMPANY_LOCATION_X, COMPANY_LOCATION_Y: COMPANY_LOCATION_Y))
             
@@ -593,19 +622,20 @@ class DBHelper{
     }//end of readPrescriptionDataAll
     
     func readPrescriptionData(conditional:String) -> [Prescription] {
-        let query: String = "select * from Store_Prescription_Drug_edit UNION ALL select * from Store_Non_Prescription_Drug_edit where "
-        let finalQuery = query+conditional+";"
+        let query1: String = "select * from Store_Prescription_Drug_edit where "
+        let query2: String = "select * from Store_Non_Prescription_Drug_edit where "
+        let finalQuery = query1+conditional+" and BUSINESS_STATUS_CODE=1 UNION ALL "+query2+conditional+" and BUSINESS_STATUS_CODE=1;"
         var stmt: OpaquePointer? = nil
         var result: [Prescription] = []
-
+        
         if sqlite3_prepare(self.db, finalQuery, -1, &stmt, nil) != SQLITE_OK {
             let errorMessage = String(cString: sqlite3_errmsg(db)!)
             print("error while prepare: \(errorMessage)")
             return result
         }//end of if
-    
-        print(query)
-    
+        
+        print(finalQuery)
+        
         while sqlite3_step(stmt) == SQLITE_ROW {
             
             if sqlite3_column_type(stmt, 0) != SQLITE_NULL {
@@ -662,178 +692,30 @@ class DBHelper{
                 COMPANY_NAME = " "
             }//end of if
             
-            if let cString = sqlite3_column_text(stmt, 9) {
-                let stringValue = String(cString: cString)
-                if let doubleValue = Double(stringValue) {
-                    COMPANY_LOCATION_X = doubleValue
-                } else {
-                    COMPANY_LOCATION_X = 0.0
-                }//end of else if let
+            if let columnValue = sqlite3_column_text(stmt, 9) {
+                let stringValue = String(cString: columnValue)
+                COMPANY_LOCATION_X = Double(stringValue) ?? 0.0
             } else {
                 COMPANY_LOCATION_X = 0.0
-            }//end of else if let
-
-            if sqlite3_column_type(stmt, 10) != SQLITE_NULL {
-                if let cString = sqlite3_column_text(stmt, 10) {
-                    let stringValue = String(cString: cString)
-                    if let doubleValue = Double(stringValue) {
-                        COMPANY_LOCATION_Y = doubleValue
-                    } else {
-                        // Handle conversion error for COMPANY_LOCATION_Y
-                        COMPANY_LOCATION_Y = 0.0
-                    }//end of else if let
-                } else {
-                    // Handle retrieval error for COMPANY_LOCATION_Y
-                    COMPANY_LOCATION_Y = 0.0
-                }//end of else if
+                
+            }//end of else if
+            
+            if let columnValue = sqlite3_column_text(stmt, 10) {
+                let stringValue = String(cString: columnValue)
+                COMPANY_LOCATION_Y = Double(stringValue) ?? 0.0
             } else {
                 COMPANY_LOCATION_Y = 0.0
             }//end of else if
-                       
+            
             result.append(Prescription(SERVICE_NAME: SERVICE_NAME, BUSINESS_STATUS_CODE: BUSINESS_STATUS_CODE, BUSINESS_STATUS_NAME: BUSINESS_STATUS_NAME, COMPANY_PHONE_NUMBER: COMPANY_PHONE_NUMBER, COMPANY_POSTAL_ADDRESS: COMPANY_POSTAL_ADDRESS, COMPANY_ALL_ADDRESS: COMPANY_ALL_ADDRESS, COMPANY_ROAD_NAME_ADDRESS: COMPANY_ROAD_NAME_ADDRESS, COMPANY_ROAD_NAME_POSTAL_ADDRESS: COMPANY_ROAD_NAME_POSTAL_ADDRESS, COMPANY_NAME: COMPANY_NAME, COMPANY_LOCATION_X: COMPANY_LOCATION_X, COMPANY_LOCATION_Y: COMPANY_LOCATION_Y))
             
         }//end of while
-    
+        
         sqlite3_finalize(stmt)
         
         return result
     }//end of readPrescriptionData
     
-    func convertGRID_GPS(mode: Int, lat_X: Double, lng_Y: Double) -> LatXLngY {
-        let RE = 6371.00877 // Earth radius (km)
-        let GRID = 5.0 // Grid interval (km)
-        let SLAT1 = 30.0 // Projection latitude 1 (degree)
-        let SLAT2 = 60.0 // Projection latitude 2 (degree)
-        let OLON = 126.0 // Reference longitude (degree)
-        let OLAT = 38.0 // Reference latitude (degree)
-        let XO: Double = 43 // Reference X-coordinate (GRID)
-        let YO: Double = 136 // Reference Y-coordinate (GRID)
-        
-        // LCC DFS coordinate transformation ( code : "TO_GRID"(latitude, longitude -> coordinates, lat_X:latitude,  lng_Y:longitude), "TO_GPS"(coordinates -> latitude, longitude,  lat_X:x, lng_Y:y), "TO_GPS_FROM_GRID"(coordinates -> latitude, longitude,  lat_X:x, lng_Y:y) )
-        
-        let DEGRAD = Double.pi / 180.0
-        let RADDEG = 180.0 / Double.pi
-        
-        let re = RE / GRID
-        let slat1 = SLAT1 * DEGRAD
-        let slat2 = SLAT2 * DEGRAD
-        let olon = OLON * DEGRAD
-        let olat = OLAT * DEGRAD
-        
-        var sn = tan(Double.pi * 0.25 + slat2 * 0.5) / tan(Double.pi * 0.25 + slat1 * 0.5)
-        sn = log(cos(slat1) / cos(slat2)) / log(sn)
-        var sf = tan(Double.pi * 0.25 + slat1 * 0.5)
-        sf = pow(sf, sn) * cos(slat1) / sn
-        var ro = tan(Double.pi * 0.25 + olat * 0.5)
-        ro = re * sf / pow(ro, sn)
-        var rs = LatXLngY(lat: 0, lng: 0, x: 0, y: 0)
-        
-        if mode == TO_GRID {
-            rs.lat = lat_X
-            rs.lng = lng_Y
-            var ra = tan(Double.pi * 0.25 + (lat_X) * DEGRAD * 0.5)
-            ra = re * sf / pow(ra, sn)
-            var theta = lng_Y * DEGRAD - olon
-            if theta > Double.pi {
-                theta -= 2.0 * Double.pi
-            }//end of if
-            if theta < -Double.pi {
-                theta += 2.0 * Double.pi
-            }//end of if
-            
-            theta *= sn
-            rs.x = Int(floor(ra * sin(theta) + XO + 0.5))
-            rs.y = Int(floor(ro - ra * cos(theta) + YO + 0.5))
-        }else if mode == TO_GPS {
-            rs.x = Int(lat_X)
-            rs.y = Int(lng_Y)
-            let xn = lat_X - XO
-            let yn = ro - lng_Y + YO
-            var ra = sqrt(xn * xn + yn * yn)
-            if sn < 0.0 {
-                ra = -ra
-            }//end of if
-            var alat = pow((re * sf / ra), (1.0 / sn))
-            alat = 2.0 * atan(alat) - Double.pi * 0.5
-            
-            var theta = 0.0
-            if abs(xn) <= 0.0 {
-                theta = 0.0
-            }else {
-                if abs(yn) <= 0.0 {
-                    theta = Double.pi * 0.5
-                    if xn < 0.0 {
-                        theta = -theta
-                    }//end of if
-                }else {
-                    theta = atan2(xn, yn)
-                }//end of if
-            }//end of else if
-            let alon = theta / sn + olon
-            rs.lat = alat * RADDEG
-            rs.lng = alon * RADDEG
-        }else if mode == TO_GPS_FROM_GRID {
-            let xn = lat_X - XO
-            let yn = ro - lng_Y + YO
-            var ra = sqrt(xn * xn + yn * yn)
-            if sn < 0.0 {
-                ra = -ra
-            }//end of if
-            
-            var alat = pow((re * sf / ra), (1.0 / sn))
-            alat = 2.0 * atan(alat) - Double.pi * 0.5
-            
-            var theta = 0.0
-            if abs(xn) <= 0.0 {
-                theta = 0.0
-            }else {
-                if abs(yn) <= 0.0 {
-                    theta = Double.pi * 0.5
-                    if xn < 0.0 {
-                        theta = -theta
-                    }//end of if
-                }else {
-                    theta = atan2(xn, yn)
-                }//end of else if
-            }//end of else if
-            let alon = theta / sn + olon
-            rs.lat = alat * RADDEG
-            rs.lng = alon * RADDEG
-        }//end of if mode == TO_GRID
-        
-        //print("Converted coordinates - Lat: \(rs.lat), Lng: \(rs.lng), X: \(rs.x), Y: \(rs.y)")
-        
-        return rs
-    }//end of convertGRID_GPS
-    
 
-    func convertGRID_GPS1(mode: Int, lat_X: Double, lng_Y: Double) -> LatXLngY {
-        var convertedLatX: Double = 0.0
-        var convertedLngY: Double = 0.0
-        var convertedX: Int = 0
-        var convertedY: Int = 0
-
-        if mode == TO_GPS {
-            // Conversion logic from GRID to GPS
-            // Replace with your actual conversion formulas
-            convertedLatX = lat_X * 0.1234
-            convertedLngY = lng_Y * 0.5678
-            convertedX = Int(lat_X * 100)
-            convertedY = Int(lng_Y * 100)
-        } else if mode == TO_GRID {
-            // Conversion logic from GPS to GRID
-            // Replace with your actual conversion formulas
-            convertedLatX = lat_X * 1.2345
-            convertedLngY = lng_Y * 1.6789
-            convertedX = Int(lat_X * 200)
-            convertedY = Int(lng_Y * 200)
-        }
-
-        let result = LatXLngY(lat: convertedLatX, lng: convertedLngY, x: convertedX, y: convertedY)
-        return result
-    }
-
-
-    
     
 }//end of class
